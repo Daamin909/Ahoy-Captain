@@ -1,10 +1,8 @@
 import discord
-import os
-from dotenv import load_dotenv
 from discord.ext import commands
 from groq import Groq
 import requests
-load_dotenv()
+import os
 
 intents = discord.Intents.default()
 intents.messages = True  
