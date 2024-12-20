@@ -41,7 +41,8 @@ async def on_message(message):
     }
     requests.post(os.getenv("CHANNELWEBHOOK"), json=content)
     insult = requests.get("https://pirate.monkeyness.com/api/insult")
-    await message.channel.send(f"<@{os.getenv('VICTIMID')}> \n{insult.text}") 
+    victimid=os.getenv('VICTIMID')
+    await message.channel.send(f"<@{victimid}> \n{insult.text}") 
     await bot.process_commands(message)
 
 bot.run(os.getenv('DTOKEN'))
