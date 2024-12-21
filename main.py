@@ -46,3 +46,23 @@ async def on_message(message):
     await bot.process_commands(message)
 
 bot.run(os.getenv('DTOKEN'))
+
+
+
+# this is a dummy flask server to keep it hosted on render without failing
+
+from flask import Flask
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)
+
+
+@app.route("/hey", methods=['GET'])
+def getNews():
+    return "check out sir daamin at https://daamin.tech/"
+
+
+
+if __name__ == '__main__':
+    app.run(host="0.0.0.0", debug=True)
