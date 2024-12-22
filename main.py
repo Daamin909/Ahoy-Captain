@@ -3,12 +3,10 @@ from discord.ext import commands
 from groq import Groq
 import requests
 import os
-from dotenv import load_dotenv
 from flask import Flask
 from flask_cors import CORS
 from multiprocessing import Process
 
-load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
