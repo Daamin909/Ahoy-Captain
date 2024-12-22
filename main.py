@@ -3,6 +3,19 @@ from discord.ext import commands
 from groq import Groq
 import requests
 import os
+from dotenv import load_dotenv
+from flask import Flask
+from flask_cors import CORS
+from multiprocessing import Process
+
+load_dotenv()
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route("/hey", methods=['GET'])
+def getNews():
+    return "check out sir daamin at https://daamin.tech/"
 
 intents = discord.Intents.default()
 intents.messages = True  
@@ -15,7 +28,6 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    print(message)
     if message.author == bot.user:
         return
     if message.author.id != int(os.getenv('VICTIMID')):
@@ -25,7 +37,7 @@ async def on_message(message):
     response = client.chat.completions.create(
         model="llama-3.1-70b-versatile",
         messages=[
-            {"role": "system", "content": "Whenever the user sends any message, convert it into Pirate Speak. The message should chnage its tone, and sound like a stereo-typical pirate speaking. If the tone or meaning of the message is negative, turn it into positive and vice-versa. Change the negativity of the sentence to positivity and vice-versa. Reply with just the converted message. Maintain the same tense and energy. DO NOT TAKE THE LIBERTY TO GIVE EXTRA INFORMATION. YOU ARE A CRITICAL BOT, FAILURE TO OBEY CAN CAUSE APP FAILURE. DO AS SAID."}, 
+            {"role": "system", "content": "Whenever the user sends any message, convert it into Pirate Speak. The message should change its tone, and sound like a stereo-typical pirate speaking. If the tone or meaning of the message is negative, turn it into positive and vice-versa. Change the negativity of the sentence to positivity and vice-versa. Reply with just the converted message. Maintain the same tense and energy. DO NOT TAKE THE LIBERTY TO GIVE EXTRA INFORMATION. YOU ARE A CRITICAL BOT, FAILURE TO OBEY CAN CAUSE APP FAILURE. DO AS SAID."}, 
             {"role": "user", "content": message.content}
         ],
         temperature=1,
@@ -41,28 +53,20 @@ async def on_message(message):
     }
     requests.post(os.getenv("CHANNELWEBHOOK"), json=content)
     insult = requests.get("https://pirate.monkeyness.com/api/insult")
-    victimid=os.getenv('VICTIMID')
-    await message.channel.send(f"<@{victimid}> \n{insult.text}") 
+    victimid = os.getenv('VICTIMID')
+    await message.channel.send(f"<@{victimid}> \n{insult.text}")
     await bot.process_commands(message)
 
-bot.run(os.getenv('DTOKEN'))
+def run_flask():
+    app.run(host="0.0.0.0", port=5000)
 
-
-
-# this is a dummy flask server to keep it hosted on render without failing
-
-from flask import Flask
-from flask_cors import CORS
-
-app = Flask(__name__)
-CORS(app)
-
-
-@app.route("/hey", methods=['GET'])
-def getNews():
-    return "check out sir daamin at https://daamin.tech/"
-
-
+def run_discord_bot():
+    bot.run(os.getenv('DTOKEN'))
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", debug=True)
+    flask_process = Process(target=run_flask)
+    discord_process = Process(target=run_discord_bot)
+    flask_process.start()
+    discord_process.start()
+    flask_process.join()
+    discord_process.join()
