@@ -19,4 +19,3 @@ Ahoy Captain is a fun and mischievous Discord bot that lets you troll innocent p
 4. The bot then tags the user and adds a pirate-themed insult.
 
 "Turn your Discord server into the high seas of chaos!" 🏴⚓💀
-
